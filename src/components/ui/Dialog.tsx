@@ -45,7 +45,6 @@ const Dialog: React.FC<DialogProps> = ({
   };
   return (
     <RadixDialog.Root open={isOpen} onOpenChange={onClose}>
-      {' '}
       {/* Gunakan isOpen dan onClose */}
       {trigger && <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger>}
       {isOpen && ( // Hanya render Portal dan isinya jika dialog terbuka untuk performa

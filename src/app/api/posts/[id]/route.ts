@@ -18,6 +18,8 @@ export async function GET(
 
     if (type === 'comments') {
       response = await api.get(`${BlogPost.postById}${id}/comments`);
+    } else if (type === 'likesPost') {
+      response = await api.get(`${BlogPost.postById}${id}/likes`);
     } else {
       response = await api.get(`${BlogPost.postById}${id}`);
     }

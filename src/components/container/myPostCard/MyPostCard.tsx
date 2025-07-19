@@ -2,12 +2,13 @@
 
 import useScreenSize from '@/hooks/useScreenSize';
 import type { PostCardProps, User } from '@/interfaces/BlogProps.interface';
-import { deletePost, getPostComments, getUserById } from '@/lib/api-client';
+import { getUserById } from '@/lib/api-client';
 import Image from 'next/image';
 import Link from 'next/link';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import DeletePostDialog from '../deletePost/deletePostDialog';
+import StatisticDialog from '../statisticPage/StatisticDialog';
 
 const formatDateToIndonesian = (isoDate: string): string => {
   const date = new Date(isoDate);
@@ -19,11 +20,10 @@ const formatDateToIndonesian = (isoDate: string): string => {
 };
 
 const MyPostCard: React.FC<PostCardProps> = ({ post, index }) => {
-  const [isStatistic, setIsStatistic] = useState(false);
   const { isDesktop } = useScreenSize();
   const [userPost, setUserPost] = useState<User | null>(null);
   const [isDeletePostDialogOpen, setIsDeletePostDialogOpen] = useState(false);
-  const [commentPost, setCommentPost] = useState<Comment[] | null>(null);
+  const [isStatisticDialogOpen, setIsStatisticDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,12 +33,6 @@ const MyPostCard: React.FC<PostCardProps> = ({ post, index }) => {
           const userData = await getUserById(String(post.author.id));
           setUserPost(userData);
         }
-
-        // Fetch comments
-        if (post?.id) {
-          const commentsData = await getPostComments(post.id);
-          setCommentPost(commentsData);
-        }
       } catch (error) {
         console.error('Failed to fetch post card data:', error);
       }
@@ -46,15 +40,6 @@ const MyPostCard: React.FC<PostCardProps> = ({ post, index }) => {
 
     fetchData();
   }, [post]);
-
-  const handleDeletePost = async (id: string) => {
-    try {
-      await deletePost(id);
-      window.location.reload();
-    } catch (error) {
-      console.error('Failed to delete post:', error);
-    }
-  };
 
   return (
     <div key={index} className='flex gap-24 lg:border-b border-neutral-300'>
@@ -109,9 +94,9 @@ const MyPostCard: React.FC<PostCardProps> = ({ post, index }) => {
         <div className='flex items-center justify-start gap-8 mb-16'>
           <span
             onClick={() => {
-              setIsStatistic(!isStatistic);
+              setIsStatisticDialogOpen(true);
             }}
-            className='text-sm font-semibold text-primary-300 underline'
+            className='text-sm font-semibold text-primary-300 underline cursor-pointer'
           >
             Statistic
           </span>
@@ -134,6 +119,11 @@ const MyPostCard: React.FC<PostCardProps> = ({ post, index }) => {
         isOpen={isDeletePostDialogOpen}
         onClose={() => setIsDeletePostDialogOpen(false)}
         postId={post.id as string}
+      />
+      <StatisticDialog
+        isOpen={isStatisticDialogOpen}
+        onClose={() => setIsStatisticDialogOpen(false)}
+        id={post.id as string}
       />
     </div>
   );
