@@ -6,6 +6,7 @@ import {
   getUserById,
   getRecommendedPosts,
   postComments,
+  likePost,
 } from '@/lib/api-client';
 import PostCard from '@/components/container/postCard/PostCard';
 import type {
@@ -17,12 +18,13 @@ import type {
 import { MessageSquare, ThumbsUp, X } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Input from '@/components/ui/Input/InputBox';
 import { useUser } from '@/context/UserContext';
 import Button from '@/components/ui/Button/Button';
 import axios, { AxiosError } from 'axios';
 import { ErrorResponse } from '@/interfaces/auth';
+import { useToast } from '@/context/ToastContext';
 
 const formatDateToIndonesian = (isoDate: string): string => {
   const date = new Date(isoDate);
@@ -47,9 +49,12 @@ export default function DetailPost() {
   const [isLoading, setIsLoading] = useState(true);
   const [reloadPage, setReloadPage] = useState(false);
   const { user } = useUser();
+  const { showToast } = useToast();
+  const [alreadyLiked, setAlreadyLiked] = useState<boolean>(false);
   const [errors, setErrors] = useState<{
     content?: string;
   }>({});
+  const [likesCount, setLikesCount] = useState<number>(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,6 +65,7 @@ export default function DetailPost() {
         // Fetch post data
         const postData = await getPostById(params.id as string);
         setPost(postData);
+        setLikesCount(postData.likes || 0);
 
         // Fetch comments
         const commentsData = await getPostComments(params.id as string);
@@ -151,6 +157,51 @@ export default function DetailPost() {
     }
   };
 
+  const handleLikePost = useCallback(
+    async (post: BlogPostProps) => {
+      if (!post?.id || user?.id === undefined || user?.id === null) {
+        showToast({
+          title: 'Gagal',
+          description: 'Anda harus login untuk menyukai postingan.',
+          status: 'error',
+        });
+        return;
+      }
+      const newAlreadyLiked = !alreadyLiked;
+
+      try {
+        if (alreadyLiked) {
+          setLikesCount((prev) => prev - 1);
+          setAlreadyLiked(false);
+        } else {
+          setLikesCount((prev) => prev + 1);
+          setAlreadyLiked(true);
+        }
+
+        await likePost(String(post.id));
+
+        showToast({
+          title: 'Berhasil',
+          description: newAlreadyLiked
+            ? 'Anda berhasil menyukai post!'
+            : 'Anda berhasil membatalkan suka post!',
+          status: 'success',
+        });
+      } catch (error) {
+        console.error('Failed to like/unlike post:', error);
+        setLikesCount((prev) => (alreadyLiked ? prev + 1 : prev - 1));
+        setAlreadyLiked((prev) => !prev);
+        showToast({
+          title: 'Error',
+          description:
+            'Gagal menyukai/membatalkan suka post. Silakan coba lagi.',
+          status: 'error',
+        });
+      }
+    },
+    [post?.id, user?.id, alreadyLiked, showToast]
+  );
+
   const handleSeeAllComments = () => {
     setSeeAllComments(!seeAllComments);
   };
@@ -203,8 +254,14 @@ export default function DetailPost() {
       </div>
 
       <div className='flex items-center justify-start gap-8 border-b border-neutral-300 pb-12'>
-        <ThumbsUp size={20} />
-        <span className='text-xs md:text-sm'>{post.likes}</span>
+        <ThumbsUp
+          size={20}
+          onClick={() => {
+            handleLikePost(post);
+          }}
+          className={`cursor-pointer ${alreadyLiked ? 'text-primary-300' : ''}`}
+        />
+        <span className='text-xs md:text-sm'>{likesCount}</span>
         <MessageSquare size={20} />
         <span className='text-xs md:text-sm'>{commentPost?.length || 0}</span>
       </div>

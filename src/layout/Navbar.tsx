@@ -30,7 +30,7 @@ const Navbar = () => {
 
   return (
     <div
-      className='fixed top-0 right-0 left-0 bg-white'
+      className='fixed top-0 right-0 left-0 bg-white z-50'
       style={{
         height: 'clamp(64px, calc(3.62rem + 1.53vw), 80px)',
       }}

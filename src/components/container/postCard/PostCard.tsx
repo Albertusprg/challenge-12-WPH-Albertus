@@ -1,5 +1,6 @@
 'use client';
 
+import { useToast } from '@/context/ToastContext';
 import { useUser } from '@/context/UserContext';
 import useScreenSize from '@/hooks/useScreenSize';
 import type { PostCardProps, User } from '@/interfaces/BlogProps.interface';
@@ -31,6 +32,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, index }) => {
   const [commentPost, setCommentPost] = useState<Comment[] | null>(null);
   const [likesCount, setLikesCount] = useState<number>(post.likes || 0);
   const [alreadyLiked, setAlreadyLiked] = useState<boolean>(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,9 +71,14 @@ const PostCard: React.FC<PostCardProps> = ({ post, index }) => {
 
   const handleLikePost = useCallback(async () => {
     if (!post?.id || user?.id === undefined || user?.id === null) {
-      alert('Anda harus login untuk menyukai postingan.');
+      showToast({
+        title: 'Gagal',
+        description: 'Anda harus login untuk menyukai postingan.',
+        status: 'error',
+      });
       return;
     }
+    const newAlreadyLiked = !alreadyLiked;
 
     try {
       if (alreadyLiked) {
@@ -83,13 +90,25 @@ const PostCard: React.FC<PostCardProps> = ({ post, index }) => {
       }
 
       await likePost(String(post.id));
+
+      showToast({
+        title: 'Berhasil',
+        description: newAlreadyLiked
+          ? 'Anda berhasil menyukai post!'
+          : 'Anda berhasil membatalkan suka post!',
+        status: 'success',
+      });
     } catch (error) {
       console.error('Failed to like/unlike post:', error);
       setLikesCount((prev) => (alreadyLiked ? prev + 1 : prev - 1));
       setAlreadyLiked((prev) => !prev);
-      alert('Gagal menyukai/membatalkan suka postingan. Silakan coba lagi.');
+      showToast({
+        title: 'Error',
+        description: 'Gagal menyukai/membatalkan suka post. Silakan coba lagi.',
+        status: 'error',
+      });
     }
-  }, [post?.id, user?.id, alreadyLiked]);
+  }, [post?.id, user?.id, alreadyLiked, showToast]);
 
   return (
     <div key={index} className='flex gap-24 lg:border-b border-neutral-300'>

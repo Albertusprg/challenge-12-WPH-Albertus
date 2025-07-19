@@ -24,7 +24,7 @@ const Tabs: React.FC<TabsProps> = ({
     <RadixTabs.Root className='flex flex-col w-full ' defaultValue='tab1'>
       <RadixTabs.List className={'flex shrink-0'} aria-label={label}>
         <RadixTabs.Trigger
-          className={`flex justify-center w-full items-center text-sm font-semibold border-b py-10 ${
+          className={`flex justify-center w-full items-center text-sm font-semibold border-b py-10 cursor-pointer ${
             activeTab === 'tab1'
               ? 'border-b-3 border-primary-300'
               : 'border-neutral-300 '
@@ -34,7 +34,7 @@ const Tabs: React.FC<TabsProps> = ({
           {trigger1}
         </RadixTabs.Trigger>
         <RadixTabs.Trigger
-          className={`flex justify-center w-full items-center text-sm font-semibold border-b border-neutral-300 py-10 ${
+          className={`flex justify-center w-full items-center text-sm font-semibold border-b border-neutral-300 py-10 cursor-pointer ${
             activeTab === 'tab2'
               ? 'border-b-3 border-primary-300'
               : 'border-neutral-300 '
