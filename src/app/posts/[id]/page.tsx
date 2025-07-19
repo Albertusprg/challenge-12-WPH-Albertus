@@ -290,7 +290,6 @@ export default function DetailPost() {
           </div>
         ))}
 
-        {/* Optional: Link to view all comments */}
         <p
           className='text-sm text-primary-500 mt-4 underline cursor-pointer'
           onClick={handleSeeAllComments}
