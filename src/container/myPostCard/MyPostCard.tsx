@@ -2,7 +2,7 @@
 
 import useScreenSize from '@/hooks/useScreenSize';
 import type { PostCardProps, User } from '@/interfaces/BlogProps.interface';
-import { deletePost, getPostComments, getUserById } from '@/lib/api-client';
+import { deletePost, getUserById } from '@/lib/api-client';
 import Image from 'next/image';
 import Link from 'next/link';
 import type React from 'react';
@@ -21,7 +21,6 @@ const MyPostCard: React.FC<PostCardProps> = ({ post, index }) => {
   const [isStatistic, setIsStatistic] = useState(false);
   const { isDesktop } = useScreenSize();
   const [userPost, setUserPost] = useState<User | null>(null);
-  const [commentPost, setCommentPost] = useState<Comment[] | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,12 +29,6 @@ const MyPostCard: React.FC<PostCardProps> = ({ post, index }) => {
         if (post?.author?.id) {
           const userData = await getUserById(String(post.author.id));
           setUserPost(userData);
-        }
-
-        // Fetch comments
-        if (post?.id) {
-          const commentsData = await getPostComments(post.id);
-          setCommentPost(commentsData);
         }
       } catch (error) {
         console.error('Failed to fetch post card data:', error);
