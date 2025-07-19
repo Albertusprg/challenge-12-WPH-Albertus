@@ -165,9 +165,8 @@ export default function DetailPost() {
 
   return (
     <div
-      className='flex flex-col gap-12 text-neutral-900 mx-auto'
+      className='flex flex-col gap-12 text-neutral-900 mx-auto max-w-800 px-16'
       style={{
-        paddingInline: 'clamp(16px, 11.84vw - 30.55px, 140px)',
         paddingTop: 'clamp(88px, calc(2.69rem + 5.35vw), 128px)',
       }}
     >
@@ -194,20 +193,20 @@ export default function DetailPost() {
           alt='Author'
           width={30}
           height={30}
-          className='rounded-full object-cover w-30 h-30'
+          className='rounded-full object-cover w-30 h-30 md:w-40 md:h-40'
         />
-        <p className='text-xs font-regular'>{post.author?.name}</p>
+        <p className='text-xs md:text-sm font-regular'>{post.author?.name}</p>
         <Image src='/ellipse.svg' alt='dot' width={4} height={4} />
-        <p className='text-xs font-regular text-neutral-600'>
+        <p className='text-xs md:text-sm font-regular text-neutral-600'>
           {post.createdAt ? formatDateToIndonesian(post.createdAt) : ''}
         </p>
       </div>
 
       <div className='flex items-center justify-start gap-8 border-b border-neutral-300 pb-12'>
         <ThumbsUp size={20} />
-        <span>{post.likes}</span>
+        <span className='text-xs md:text-sm'>{post.likes}</span>
         <MessageSquare size={20} />
-        <span>{commentPost?.length || 0}</span>
+        <span className='text-xs md:text-sm'>{commentPost?.length || 0}</span>
       </div>
 
       <Image
@@ -218,7 +217,10 @@ export default function DetailPost() {
         className='rounded-sm object-cover w-full'
       />
 
-      <p className='mt-4 text-sm'>{post.content}</p>
+      <div
+        className='mt-4 text-sm'
+        dangerouslySetInnerHTML={{ __html: post.content || '' }}
+      ></div>
 
       <hr />
 

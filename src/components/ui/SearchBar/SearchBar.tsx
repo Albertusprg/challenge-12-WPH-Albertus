@@ -50,7 +50,7 @@ const SearchBar = () => {
               type='text'
               placeholder='Search'
               value={query}
-              className='w-full text-sm font-regular placeholder-neutral-500'
+              className='w-full text-sm font-regular placeholder-neutral-500 px-4'
               onChange={handleInputChange}
               autoComplete='off'
             />

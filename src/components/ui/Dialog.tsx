@@ -75,11 +75,7 @@ const Dialog: React.FC<DialogProps> = ({
             </div>
 
             {/* Konten Dialog */}
-            <div className='pt-4 pb-0'>
-              {' '}
-              {/* Ubah padding */}
-              {children}
-            </div>
+            <div className='pt-4 pb-0'>{children}</div>
 
             {/* Footer Dialog (untuk actionButton dan Cancel) */}
             {(actionButton || !closeOnOverlayClick) && ( // Tampilkan footer jika ada actionButton atau jika closeOnOverlayClick false (perlu tombol cancel)

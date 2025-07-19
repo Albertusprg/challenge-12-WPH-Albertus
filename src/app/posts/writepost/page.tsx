@@ -522,13 +522,15 @@ export default function WritePostPage() {
           )}
 
           {/* Submit Button */}
-          <button
-            type='submit'
-            disabled={isLoading}
-            className='w-full py-4 bg-primary-300 text-white font-semibold rounded-full hover:bg-primary-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
-          >
-            {isLoading ? 'Processing...' : 'Finish'}
-          </button>
+          <div className='flex justify-end'>
+            <button
+              type='submit'
+              disabled={isLoading}
+              className='w-full md:w-265 py-4 bg-primary-300 text-white font-semibold rounded-full hover:bg-primary-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+            >
+              {isLoading ? 'Processing...' : 'Finish'}
+            </button>
+          </div>
         </form>
       </div>
     </div>

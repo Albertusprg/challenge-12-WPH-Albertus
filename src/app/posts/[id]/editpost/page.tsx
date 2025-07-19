@@ -488,7 +488,7 @@ export default function EditPostPage() {
       >
         <Link href='/' className='flex items-center gap-3 text-neutral-900'>
           <ArrowLeft size={24} />
-          <span className='text-lg font-semibold'>Write Post</span>
+          <span className='text-lg font-semibold'>Edit Post</span>
         </Link>
         <div className='flex items-center gap-3'>
           <Image
@@ -652,13 +652,15 @@ export default function EditPostPage() {
           )}
 
           {/* Submit Button */}
-          <button
-            type='submit'
-            disabled={isLoading}
-            className='w-full py-4 bg-primary-300 text-white font-semibold rounded-full hover:bg-primary-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
-          >
-            {isLoading ? 'Processing...' : 'Finish'}
-          </button>
+          <div className='flex justify-end'>
+            <button
+              type='submit'
+              disabled={isLoading}
+              className='w-full md:w-265 py-4 bg-primary-300 text-white font-semibold rounded-full hover:bg-primary-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+            >
+              {isLoading ? 'Processing...' : 'Save'}
+            </button>
+          </div>
         </form>
       </div>
     </div>

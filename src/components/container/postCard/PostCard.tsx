@@ -1,13 +1,19 @@
 'use client';
 
+import { useUser } from '@/context/UserContext';
 import useScreenSize from '@/hooks/useScreenSize';
 import type { PostCardProps, User } from '@/interfaces/BlogProps.interface';
-import { getPostComments, getUserById, likePost } from '@/lib/api-client';
+import {
+  getLikedPosts,
+  getPostComments,
+  getUserById,
+  likePost,
+} from '@/lib/api-client';
 import { MessageSquare, ThumbsUp } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const formatDateToIndonesian = (isoDate: string): string => {
   const date = new Date(isoDate);
@@ -19,9 +25,12 @@ const formatDateToIndonesian = (isoDate: string): string => {
 };
 
 const PostCard: React.FC<PostCardProps> = ({ post, index }) => {
+  const { user } = useUser();
   const { isDesktop } = useScreenSize();
   const [userPost, setUserPost] = useState<User | null>(null);
   const [commentPost, setCommentPost] = useState<Comment[] | null>(null);
+  const [likesCount, setLikesCount] = useState<number>(post.likes || 0);
+  const [alreadyLiked, setAlreadyLiked] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,6 +45,19 @@ const PostCard: React.FC<PostCardProps> = ({ post, index }) => {
         if (post?.id) {
           const commentsData = await getPostComments(post.id);
           setCommentPost(commentsData);
+
+          const likedUsersResponse = await getLikedPosts(String(post.id));
+          const likedUsersArray: User[] = likedUsersResponse.data || [];
+
+          const isUserAlreadyLiked =
+            user?.id !== undefined &&
+            user?.id !== null &&
+            likedUsersArray.some(
+              (likedUser: User) => Number(likedUser.id) === Number(user?.id)
+            );
+
+          setAlreadyLiked(isUserAlreadyLiked);
+          setLikesCount(likedUsersArray.length);
         }
       } catch (error) {
         console.error('Failed to fetch post card data:', error);
@@ -43,16 +65,31 @@ const PostCard: React.FC<PostCardProps> = ({ post, index }) => {
     };
 
     fetchData();
-  }, [post]);
+  }, [post, user?.id]);
 
-  const handleLikePost = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLikePost = useCallback(async () => {
+    if (!post?.id || user?.id === undefined || user?.id === null) {
+      alert('Anda harus login untuk menyukai postingan.');
+      return;
+    }
+
     try {
+      if (alreadyLiked) {
+        setLikesCount((prev) => prev - 1);
+        setAlreadyLiked(false);
+      } else {
+        setLikesCount((prev) => prev + 1);
+        setAlreadyLiked(true);
+      }
+
       await likePost(String(post.id));
     } catch (error) {
-      console.error('Failed to like post:', error);
+      console.error('Failed to like/unlike post:', error);
+      setLikesCount((prev) => (alreadyLiked ? prev + 1 : prev - 1));
+      setAlreadyLiked((prev) => !prev);
+      alert('Gagal menyukai/membatalkan suka postingan. Silakan coba lagi.');
     }
-  };
+  }, [post?.id, user?.id, alreadyLiked]);
 
   return (
     <div key={index} className='flex gap-24 lg:border-b border-neutral-300'>
@@ -82,9 +119,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, index }) => {
               </div>
             ))}
           </div>
-          <div className='line-clamp-2 max-w-full text-xs font-regular overflow-hidden'>
-            {post.content}
-          </div>
+          <div
+            className='line-clamp-2 max-w-full text-xs font-regular overflow-hidden'
+            dangerouslySetInnerHTML={{ __html: post.content || '' }}
+          ></div>
         </div>
         <div className='flex items-center justify-start gap-8'>
           <Image
@@ -108,9 +146,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, index }) => {
           <ThumbsUp
             size={20}
             onClick={handleLikePost}
-            className='cursor-pointer'
+            className={`cursor-pointer ${
+              alreadyLiked ? 'text-primary-300' : ''
+            }`}
           />
-          <span>{post?.likes}</span> <MessageSquare size={20} />
+          <span>{likesCount}</span> <MessageSquare size={20} />
           <span>{commentPost?.length || 0}</span>
         </div>
         <hr style={{ borderColor: '#d5d7da' }} className='w-full lg:hidden' />

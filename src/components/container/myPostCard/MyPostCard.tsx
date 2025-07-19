@@ -69,9 +69,10 @@ const MyPostCard: React.FC<PostCardProps> = ({ post, index }) => {
               </div>
             ))}
           </div>
-          <div className='line-clamp-2 max-w-full text-xs font-regular overflow-hidden'>
-            {post.content}
-          </div>
+          <div
+            className='line-clamp-2 max-w-full text-xs font-regular overflow-hidden'
+            dangerouslySetInnerHTML={{ __html: post.content || '' }}
+          ></div>
         </div>
         <div className='flex items-center justify-start gap-8'>
           <Image

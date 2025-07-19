@@ -122,7 +122,7 @@ const ChangePassword = () => {
         <Input
           id='currentPassword'
           label='Current Password'
-          type='password'
+          revealPassword={true}
           placeholder='Enter current password'
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
@@ -131,7 +131,7 @@ const ChangePassword = () => {
         <Input
           id='newPassword'
           label='New Password'
-          type='password'
+          revealPassword={true}
           placeholder='Enter new password'
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
@@ -140,7 +140,7 @@ const ChangePassword = () => {
         <Input
           id='confirmPassword'
           label='Confirm Password'
-          type='password'
+          revealPassword={true}
           placeholder='Enter confirm password'
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}

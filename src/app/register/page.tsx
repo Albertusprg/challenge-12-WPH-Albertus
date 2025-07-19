@@ -148,8 +148,8 @@ export default function RegisterPage() {
           <Input
             id='password'
             label='Password'
-            type='password'
             placeholder='Enter your password'
+            revealPassword={true}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             error={errors.password}
@@ -157,7 +157,7 @@ export default function RegisterPage() {
           <Input
             id='confirmPassword'
             label='Confirm Password'
-            type='password'
+            revealPassword={true}
             placeholder='Enter your confirm password'
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}

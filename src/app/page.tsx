@@ -120,12 +120,12 @@ export default function Home() {
     <div
       className='text-neutral-900 flex flex-col lg:flex-row lg:justify-center mb-24'
       style={{
-        paddingInline: 'clamp(16px, 11.84vw - 30.55px, 140px)',
+        marginInline: 'clamp(16px, 11.84vw - 30.55px, 140px)',
         paddingTop: 'clamp(88px, calc(2.69rem + 5.35vw), 128px)',
       }}
     >
       {/* Recommended Posts Section */}
-      <div className='flex flex-col max-w-807'>
+      <div className='flex flex-col'>
         <h1 className='text-xl font-bold'>Recommend For You</h1>
         {isLoading ? (
           <p className='text-center py-16 text-neutral-500'>Loading posts...</p>
