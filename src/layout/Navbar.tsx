@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Menu, PencilLine, UserRound, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import SearchBar from '../ui/SearchBar/SearchBar';
+import SearchBar from '@/components/ui/SearchBar/SearchBar';
 import useScreenSize from '@/hooks/useScreenSize';
 import { Outfit } from 'next/font/google';
 import { useUser } from '@/context/UserContext';
