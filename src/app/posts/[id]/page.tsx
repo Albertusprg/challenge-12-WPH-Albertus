@@ -199,7 +199,7 @@ export default function DetailPost() {
         });
       }
     },
-    [post?.id, user?.id, alreadyLiked, showToast]
+    [user?.id, alreadyLiked, showToast]
   );
 
   const handleSeeAllComments = () => {
