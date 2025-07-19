@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type React from 'react';
 import { useEffect, useState } from 'react';
+import DeletePostDialog from '../deletePost/deletePostDialog';
 
 const formatDateToIndonesian = (isoDate: string): string => {
   const date = new Date(isoDate);
@@ -21,6 +22,7 @@ const MyPostCard: React.FC<PostCardProps> = ({ post, index }) => {
   const [isStatistic, setIsStatistic] = useState(false);
   const { isDesktop } = useScreenSize();
   const [userPost, setUserPost] = useState<User | null>(null);
+  const [isDeletePostDialogOpen, setIsDeletePostDialogOpen] = useState(false);
   const [commentPost, setCommentPost] = useState<Comment[] | null>(null);
 
   useEffect(() => {
@@ -63,7 +65,7 @@ const MyPostCard: React.FC<PostCardProps> = ({ post, index }) => {
             alt='Logo'
             width={340}
             height={258}
-            className='object-cover max-w-340 max-h-258 rounded-sm'
+            className='object-cover w-340 h-258 rounded-sm'
           />
         </Link>
       )}
@@ -120,9 +122,7 @@ const MyPostCard: React.FC<PostCardProps> = ({ post, index }) => {
             Edit
           </Link>
           <span
-            onClick={
-              post?.id ? () => handleDeletePost(post.id as string) : undefined
-            }
+            onClick={() => setIsDeletePostDialogOpen(true)}
             className='text-sm font-semibold text-[#EE1D52] underline cursor-pointer'
           >
             Delete
@@ -130,6 +130,11 @@ const MyPostCard: React.FC<PostCardProps> = ({ post, index }) => {
         </div>
         <hr style={{ borderColor: '#d5d7da' }} className='lg:hidden' />
       </div>
+      <DeletePostDialog
+        isOpen={isDeletePostDialogOpen}
+        onClose={() => setIsDeletePostDialogOpen(false)}
+        postId={post.id as string}
+      />
     </div>
   );
 };

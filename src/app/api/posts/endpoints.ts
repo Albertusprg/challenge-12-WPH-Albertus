@@ -6,4 +6,5 @@ export const BlogPost = {
   searchPost: 'posts/search',
   userByEmail: '/users/by-email/',
   postsByUser: '/posts/by-user/',
+  comments: '/comments/',
 };

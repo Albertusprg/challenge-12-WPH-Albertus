@@ -38,3 +38,19 @@ export interface User {
   headline: 'string';
   avatarUrl: 'string';
 }
+
+export interface PostCommentPayload {
+  content: string;
+}
+
+export interface PostCommentResponse {
+  id: string;
+  content: string;
+  author: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  post: string;
+  createdAt: string;
+}

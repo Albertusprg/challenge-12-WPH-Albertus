@@ -5,17 +5,24 @@ import {
   getPostComments,
   getUserById,
   getRecommendedPosts,
+  postComments,
 } from '@/lib/api-client';
 import PostCard from '@/components/container/postCard/PostCard';
 import type {
   BlogPostProps,
   Comment,
+  PostCommentPayload,
   User,
 } from '@/interfaces/BlogProps.interface';
 import { MessageSquare, ThumbsUp, X } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Input from '@/components/ui/Input/InputBox';
+import { useUser } from '@/context/UserContext';
+import Button from '@/components/ui/Button/Button';
+import axios, { AxiosError } from 'axios';
+import { ErrorResponse } from '@/interfaces/auth';
 
 const formatDateToIndonesian = (isoDate: string): string => {
   const date = new Date(isoDate);
@@ -38,6 +45,11 @@ export default function DetailPost() {
   const [seeAllComments, setSeeAllComments] = useState(false);
   const [userPost, setUserPost] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [reloadPage, setReloadPage] = useState(false);
+  const { user } = useUser();
+  const [errors, setErrors] = useState<{
+    content?: string;
+  }>({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,16 +79,76 @@ export default function DetailPost() {
         console.error('Failed to fetch data:', error);
       } finally {
         setIsLoading(false);
+        setReloadPage(false);
       }
     };
 
     fetchData();
-  }, [params?.id]);
+  }, [params?.id, reloadPage]);
 
-  const handleSendComment = () => {
-    if (!commentText.trim()) return;
-    console.log('Comment submitted:', commentText);
-    setCommentText('');
+  const handleSendComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors({});
+    setIsLoading(true);
+
+    const newErrors: { content?: string } = {};
+    const content = commentText.trim();
+
+    // Validasi client-side dasar
+    if (!content) {
+      newErrors.content = 'Comment content tidak boleh kosong.';
+    }
+    // Jika ada error validasi, tampilkan dan berhenti
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      console.error(errors);
+      setIsLoading(false);
+      return;
+    }
+
+    const payload: PostCommentPayload = { content };
+
+    try {
+      const response = await postComments(params.id as string, payload);
+
+      console.log('Post comment successful:', response.data);
+      alert('Comment berhasil diupload!');
+
+      setCommentText('');
+      setReloadPage(true);
+    } catch (error: unknown) {
+      console.error('Error creating post:', error);
+
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<ErrorResponse>; // Pastikan ErrorResponse diimpor atau didefinisikan
+        console.error('Axios Error response:', axiosError.response?.data);
+        console.error('Axios Error status:', axiosError.response?.status);
+
+        if (axiosError.response?.status === 401) {
+          console.error('Autentikasi gagal. Silakan login kembali.');
+          localStorage.removeItem('authToken');
+        } else if (axiosError.response) {
+          console.error(
+            axiosError.response.data?.message ||
+              'Terjadi kesalahan saat membuat postingan.'
+          );
+        } else if (axiosError.request) {
+          console.error('Tidak ada respon dari server. Pastikan API berjalan.');
+        } else {
+          console.error(
+            'Terjadi kesalahan saat mengatur permintaan. Silakan coba lagi.'
+          );
+        }
+      } else if (error instanceof Error) {
+        console.error(
+          error.message || 'Terjadi kesalahan yang tidak diketahui.'
+        );
+      } else {
+        console.error('Terjadi kesalahan yang tidak diketahui.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSeeAllComments = () => {
@@ -158,34 +230,33 @@ export default function DetailPost() {
 
         <div className='flex items-center gap-4'>
           <Image
-            src='/user.svg'
+            src={user?.avatarUrl || '/user.svg'}
             alt='Guest'
             width={40}
             height={40}
             className='w-40 h-40 rounded-full'
           />
           <div>
-            <p className='text-xs font-semibold'>Guest</p>
+            <p className='text-xs font-semibold'>{user?.name || 'Guest'}</p>
           </div>
         </div>
-        <h2 className='text-sm font-semibold text-neutral-700'>
-          Give your comments
-        </h2>
+        <Input
+          id='comment'
+          label='Give your comments'
+          multiline={true}
+          placeholder='Enter your comment'
+          className='w-full min-h-[100px] p-4 border border-neutral-300 rounded-xl'
+          value={commentText}
+          onChange={(e) => setCommentText(e.target.value)}
+        />
         <div className='flex flex-col gap-12'>
-          <textarea
-            name='comment'
-            placeholder='Enter your comment'
-            className='w-full min-h-[100px] p-4 border border-neutral-300 rounded-md resize-none'
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-          />
           <div className='justify-end flex'>
-            <button
+            <Button
               onClick={handleSendComment}
-              className='bg-primary-300 text-white px-6 rounded-full w-204 h-48'
+              className='bg-primary-300 text-white px-6 text-sm rounded-full w-204 h-48'
             >
               Send
-            </button>
+            </Button>
           </div>
         </div>
 

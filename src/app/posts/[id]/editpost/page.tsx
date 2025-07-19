@@ -21,6 +21,8 @@ import {
   Upload,
   Undo,
   Redo,
+  ArrowUpToLine,
+  Trash2,
 } from 'lucide-react';
 
 // TipTap Imports
@@ -337,6 +339,11 @@ export default function EditPostPage() {
     }
   };
 
+  const handleDeleteImage = () => {
+    setCoverImage(null);
+    setFilePreview('');
+  };
+
   const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
@@ -539,22 +546,49 @@ export default function EditPostPage() {
               Cover Image
             </label>
             <div
-              className='border-2 border-dashed border-neutral-300 rounded-xl p-8 text-center cursor-pointer hover:border-primary-300 transition-colors'
+              className='border-2 border-dashed border-neutral-300 rounded-xl p-8 text-center hover:border-primary-300 transition-colors'
               onDragOver={handleDragOver}
               onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
             >
               {filePreview ? (
-                <div className='relative w-full h-48 overflow-hidden rounded-lg mx-auto mb-2'>
-                  <Image
-                    src={filePreview || '/placeholder.svg'}
-                    alt='Cover Preview'
-                    fill
-                    className='object-cover'
-                  />
+                <div className='flex flex-col w-full overflow-hidden justify-center items-center rounded-lg mx-auto mb-2 gap-12'>
+                  <div
+                    style={{
+                      position: 'relative',
+                      width: 'clamp(313px, calc(14.50rem + 20.63vw), 529px)',
+                      height: 'clamp(166px, calc(7.68rem + 10.98vw), 281px)',
+                    }}
+                    className='overflow-hidden rounded-lg'
+                  >
+                    <Image
+                      src={filePreview || '/placeholder.svg'}
+                      alt='Cover Preview'
+                      fill
+                      className='object-cover'
+                    />
+                  </div>
+                  <div className='flex gap-12'>
+                    <div
+                      className='flex items-center gap-6 border border-neutral-300 px-12 py-6 rounded-lg cursor-pointer'
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <ArrowUpToLine size={20} />
+                      <span>Change Image</span>
+                    </div>
+                    <div
+                      className='flex items-center gap-6 border border-neutral-300 px-12 py-6 rounded-lg cursor-pointer'
+                      onClick={handleDeleteImage}
+                    >
+                      <Trash2 size={20} color='red' />
+                      <span>Delete Image</span>
+                    </div>
+                  </div>
                 </div>
               ) : (
-                <div className='flex flex-col items-center'>
+                <div
+                  className='flex flex-col items-center'
+                  onClick={() => fileInputRef.current?.click()}
+                >
                   <div className='w-12 h-12 bg-neutral-100 rounded-lg flex items-center justify-center mb-4'>
                     <Upload size={24} className='text-neutral-500' />
                   </div>

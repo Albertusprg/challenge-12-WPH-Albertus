@@ -6,7 +6,18 @@ export interface LoginPayload {
   password: string;
 }
 
-// Payload untuk Register (sesuai Swagger: 'name' bukan 'fullName')
+export interface UpdatePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface UpdateProfilePayload {
+  name: string;
+  headline: string;
+  avatar: string;
+}
+
 export interface RegisterPayload {
   name: string;
   email: string;
@@ -18,6 +29,9 @@ export interface LoginResponse {
   token: string;
 }
 
+export interface UpdatePasswordResponse {
+  success: boolean;
+}
 // Respons dari API Register
 export interface RegisterResponse {
   id: number;

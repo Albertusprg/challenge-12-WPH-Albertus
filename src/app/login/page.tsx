@@ -69,7 +69,6 @@ export default function LoginPage() {
         alert('Login berhasil! Anda akan diarahkan ke halaman utama.');
         router.push('/'); // Redirect ke halaman utama
       } else {
-        // Jika sukses tapi tidak ada token (jarang terjadi)
         setErrors({ general: 'Login berhasil tapi token tidak ditemukan.' });
       }
     } catch (error: unknown) {

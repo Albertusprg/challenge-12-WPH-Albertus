@@ -2,7 +2,7 @@
 
 import useScreenSize from '@/hooks/useScreenSize';
 import type { PostCardProps, User } from '@/interfaces/BlogProps.interface';
-import { getPostComments, getUserById } from '@/lib/api-client';
+import { getPostComments, getUserById, likePost } from '@/lib/api-client';
 import { MessageSquare, ThumbsUp } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -45,6 +45,15 @@ const PostCard: React.FC<PostCardProps> = ({ post, index }) => {
     fetchData();
   }, [post]);
 
+  const handleLikePost = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await likePost(String(post.id));
+    } catch (error) {
+      console.error('Failed to like post:', error);
+    }
+  };
+
   return (
     <div key={index} className='flex gap-24 lg:border-b border-neutral-300'>
       {isDesktop && (
@@ -54,7 +63,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, index }) => {
             alt='Logo'
             width={340}
             height={258}
-            className='object-cover max-w-340 max-h-258 rounded-sm'
+            className='object-cover w-340 h-258 rounded-sm'
           />
         </Link>
       )}
@@ -96,8 +105,12 @@ const PostCard: React.FC<PostCardProps> = ({ post, index }) => {
           </p>
         </div>
         <div className='flex items-center justify-start gap-8 mb-16'>
-          <ThumbsUp size={20} />
-          <span>{post.likes}</span> <MessageSquare size={20} />
+          <ThumbsUp
+            size={20}
+            onClick={handleLikePost}
+            className='cursor-pointer'
+          />
+          <span>{post?.likes}</span> <MessageSquare size={20} />
           <span>{commentPost?.length || 0}</span>
         </div>
         <hr style={{ borderColor: '#d5d7da' }} className='w-full lg:hidden' />
