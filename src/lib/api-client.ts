@@ -93,7 +93,7 @@ export async function updateProfile(formData: FormData): Promise<UserType> {
 
 export async function getLikedPosts(id: string) {
   const response = await localApi.get(`api/posts/${id}?type=likesPost`);
-  return response.data;
+  return response;
 }
 
 export async function likePost(id: string) {
